@@ -1,34 +1,41 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import Nav from '../components/Nav'
-import Layout from '../components/Layout'
-import styles from '../styles/Layout.module.css'
 import { sanityClient, urlFor } from '../utils/sanity'
+import Card from '../components/Card';
+import homeStyles from '../styles/Home.module.css'
 
 
-export default function Home() {
-  console.log();
+
+export default function Home(props) {
+  console.log(props.data);
   return (
-    <div>
+    <div className={homeStyles.body}>
       <h1>J2 JamStack Template</h1>
+      <div className={homeStyles.cardContainer}>
+
+        {props.data.map((e) => {
+          return (
+            // <Card title={e.title} image={e.mainImage.asset._ref}/>
+            <Card key={e.slug.current} title={e.title} image={urlFor(e.mainImage.asset._ref).url()}/>
+          )
+        })}
+
+      </div>
     </div>
   )
 }
 
-// export async function getStaticProps() {
-//   const data = await sanityClient.fetch(
-//       `*[_type == "post"]{
-//           {
-//               title,
-//               mainImage,
-//               slug,
-//           },
-//       }`
-//   );
+//GROQ QUERY TO SANITY
+export async function getStaticProps() {
+  const data = await sanityClient.fetch(
+      `*[_type == "post"]{
+              title,
+              mainImage,
+              slug,
+      }`
+  );
 
-//   return {
-//       props: {
-//           post: data
-//       },
-//   };
-// }
+  return {
+          props: {data}
+  };
+}
+
+
